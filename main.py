@@ -1,4 +1,4 @@
-from auth_service import sign_up, login
+from auth_service import sign_up, login, get_session, sign_out, get_profile
 
 if __name__ == "__main__":
     try: 
@@ -13,5 +13,21 @@ if __name__ == "__main__":
             print(f"Sucess! User logged in with id: {result.user.id}")
         else:
             print("Login failed")
+
+        profile_data = get_profile(result.user.id)
+        if profile_data:
+            print(f"[SUCCESS] Profile found!")
+            print(f" > Username: {profile_data['username']}")
+            print(f" > Balance:  ${profile_data['cash_balance']:,.2f}")
+
+        result2 = get_session()
+        if result2:
+            print(f"Sucess! {result.user.id} is logged in currently")
+        
+        sign_out()
+        result2 = get_session()
+        if result2 is None:
+            print(f"Sucess! {result.user.id} is logged out currently")
+
     except Exception as e:
         print(f"Error: {e}")
