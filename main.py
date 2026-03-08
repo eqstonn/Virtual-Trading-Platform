@@ -1,25 +1,17 @@
-from supabase import create_client, Client
-from datetime import datetime
-import os
-from dotenv import load_dotenv
+from auth_service import sign_up, login
 
-load_dotenv()
-url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+if __name__ == "__main__":
+    try: 
+        user_email = "eastoneng282@gmail.com"
+        user_pw = "abc123"
+        user_username = "eqston"
 
-try:
-    data = {
-        "title": "First proj",
-        "content": "First post using supabase and python",
-        "created_at": datetime.now().isoformat()
-        }    
-    
-    test = supabase.table("posts").select("id").limit(1).execute()
-    print("Connection successful! Sample data: ", test.data)
+        #result = sign_up(user_email, user_pw, user_username)
+        result = login(user_email, user_pw)
 
-    response = supabase.table("posts").insert(data).execute()
-    print("reponse succesfully added", response.data)
-
-except Exception as e:
-    print("Connetion failed:", e)
+        if result.user:
+            print(f"Sucess! User logged in with id: {result.user.id}")
+        else:
+            print("Login failed")
+    except Exception as e:
+        print(f"Error: {e}")
