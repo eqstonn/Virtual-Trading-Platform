@@ -205,3 +205,16 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# --- REACT & NODE (NECESSARY) ---
+node_modules/
+dist/
+dist-ssr
+*.local
+.eslintcache
+
+# --- VITE & TAILWIND ---
+.vite/
+postcss.config.js
+tailwind.config.js
+# Note: Keep the configs unless you want to re-init them every time
