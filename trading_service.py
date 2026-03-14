@@ -73,3 +73,4 @@ def sell_stock(user_id: str, ticker: str, shares_to_sell: int, current_price: fl
         print(f"Error executing trade: {e}")
         return {"Success": False, "Detail": "Server Error. Please try again later."}
         
+#def calculate_performance(user_id: str):
