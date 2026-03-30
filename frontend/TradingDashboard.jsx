@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Search, User, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import HomePage from './HomePage.jsx';
+import LoginModal from './LoginModal.jsx';
+import SignUpModal from './SignUpModal.jsx';
 
 // Mock data for the graph
 const data = [
@@ -11,49 +14,87 @@ const data = [
 ];
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('Trade');
+  const [activeTab, setActiveTab] = useState('Home');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const handleNavigation = (page) => {
+    if (page === 'login') {
+      setShowLoginModal(true);
+    } else if (page === 'signup') {
+      setShowSignUpModal(true);
+    } else if (page === 'dashboard') {
+      setActiveTab('Trade');
+    }
+  };
+
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
+    setShowLoginModal(false);
+    setShowSignUpModal(false);
+    setActiveTab('Trade');
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await fetch('http://localhost:8000/signout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+    setUser(null);
+    setActiveTab('Home');
+  };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-gray-100 p-4 font-sans">
-      {/* HEADER SECTION */}
-      <header className="flex items-center justify-between mb-8 px-2">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-bold text-black">V</div>
-          <h1 className="text-xl font-semibold tracking-tight">Virtual Trading Sim</h1>
-        </div>
-
-        {/* TOP MIDDLE TABS */}
-        <nav className="flex bg-[#1a1a1a] rounded-full p-1 border border-gray-800">
-          {['Home', 'Trade', 'Portfolio', 'Activity'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-1.5 rounded-full text-sm transition-all ${
-                activeTab === tab ? 'bg-orange-500/20 text-orange-500 border border-orange-500/30' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {tab}
+    <>
+      {/* Show HomePage when Home tab is active */}
+      {activeTab === 'Home' ? (
+        <HomePage onNavigate={handleNavigation} user={user} onSignOut={handleSignOut} />
+      ) : (
+        <div className="min-h-screen bg-[#0f0f0f] text-gray-100 p-4 font-sans">
+          {/* HEADER SECTION */}
+          <header className="flex items-center justify-between mb-8 px-2">
+            <button onClick={() => setActiveTab('Home')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-bold text-black">V</div>
+              <h1 className="text-xl font-semibold tracking-tight">Virtual Trading Sim</h1>
             </button>
-          ))}
-        </nav>
 
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input 
-              type="text" 
-              placeholder="Search stocks..." 
-              className="bg-[#1a1a1a] border border-gray-800 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-orange-500 w-64"
-            />
-          </div>
-          <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
-            <User className="w-6 h-6 text-gray-400" />
-          </div>
-        </div>
-      </header>
+            {/* TOP MIDDLE TABS - WITHOUT HOME */}
+            <nav className="flex bg-[#1a1a1a] rounded-full p-1 border border-gray-800">
+              {['Trade', 'Portfolio', 'Activity'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-1.5 rounded-full text-sm transition-all ${
+                    activeTab === tab ? 'bg-orange-500/20 text-orange-500 border border-orange-500/30' : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </nav>
 
-      {/* MAIN CONTENT GRID */}
-      <div className="grid grid-cols-12 gap-6">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                <input 
+                  type="text" 
+                  placeholder="Search stocks..." 
+                  className="bg-[#1a1a1a] border border-gray-800 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-orange-500 w-64"
+                />
+              </div>
+              <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
+                <User className="w-6 h-6 text-gray-400" />
+              </div>
+            </div>
+          </header>
+
+          {/* MAIN CONTENT GRID */}
+          <div className="grid grid-cols-12 gap-6">
         
         {/* LEFT: GRAPH SECTION */}
         <div className="col-span-8 space-y-6">
@@ -135,7 +176,33 @@ const Dashboard = () => {
         </div>
 
       </div>
-    </div>
+        </div>
+      )}
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onSwitchToSignUp={() => {
+            setShowLoginModal(false);
+            setShowSignUpModal(true);
+          }}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
+
+      {/* Sign Up Modal */}
+      {showSignUpModal && (
+        <SignUpModal
+          onClose={() => setShowSignUpModal(false)}
+          onSwitchToLogin={() => {
+            setShowSignUpModal(false);
+            setShowLoginModal(true);
+          }}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
+    </>
   );
 };
 
