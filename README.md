@@ -84,30 +84,13 @@ npm install
 
 ## Running the Application
 
-### Option 1: Run Both Frontend & Backend Concurrently
+### Run Both Frontend & Backend Concurrently
 ```bash
 npm run dev
 ```
 This will start:
 - Frontend: http://localhost:5173
 - Backend: http://localhost:8000
-
-### Option 2: Run Separately
-
-**Backend Only:**
-```bash
-npm run dev:backend
-```
-
-**Frontend Only:**
-```bash
-npm run dev:frontend
-```
-
-### Production Build
-```bash
-npm run build
-```
 
 ## API Endpoints
 
@@ -172,25 +155,8 @@ SUPABASE_KEY=your_anon_public_key
 
 ## Future Enhancements
 
-- [ ] Integration with real market data APIs
 - [ ] Advanced charting with technical indicators
 - [ ] Leaderboard and social features
 - [ ] Mobile-responsive optimization
 - [ ] Trade alerts and notifications
 - [ ] Export trading history to CSV
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-MIT License - feel free to use this project for learning purposes.
-
-## Contact
-
-For questions or feedback, reach out via email: eastoneng282@gmail.com
-
----
-
-**Last Updated:** March 30, 2026
